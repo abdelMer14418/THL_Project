@@ -1,8 +1,0 @@
-S : A B | C | E     
-
-A : a A | E
-B: b B | b
-
-
-
-C: c C | E

@@ -1,4 +1,0 @@
-C : c C | c
-B : b B | b
-S :  | c C | c | b B | b | a A B | a B
-A : a A | a
