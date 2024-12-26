@@ -1,7 +1,7 @@
-C : T_1 C | c
-T_0 : b
-T_1 : c
-S : A B |  | T_1 C | c | T_0 B | b
-T_2 : a
+C : T_2 C | c
+T_2 : c
 B : T_0 B | b
-A : T_2 A | a
+T_0 : b
+S : A B |  | T_2 C | c | T_0 B | b
+T_1 : a
+A : T_1 A | a
