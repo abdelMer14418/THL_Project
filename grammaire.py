@@ -135,14 +135,16 @@ if __name__ == "__main__":
     print("Context Free Grammar Transformation")
 
     # Define Grammar
-    non_terminals = {"S", "A", "B"}
+    non_terminals = {"S", "A", "B", "C"}
     terminals = {"a", "b"}
 
     rules = {
-        "S": ["AB", "a"],
-        "A": ["a", "ε"],
-        "B": ["b", "ε"]
+        "S": ["AB"],
+        "A": ["aB"],
+        "B": ["bC"],
+        "C": ["a"]
     }
+
 
     start_symbol = "S"
 
