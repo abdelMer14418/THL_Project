@@ -26,7 +26,6 @@ def read_grammar(filename):
 
     return non_terminals, terminals, start_symbol, productions
 
-
 def write_grammar(filename, non_terminals, productions):
     """Write the grammar to a file."""
     with open(filename, "w") as file:
@@ -35,6 +34,12 @@ def write_grammar(filename, non_terminals, productions):
             rules_str = " | ".join(" ".join(r).replace("ε", "E") for r in rules)
             file.write(f"{var} : {rules_str}\n")
 
+def print_grammar(non_terminals, productions):
+    """Print the grammar in a readable line-by-line format."""
+    for var in non_terminals:
+        rules = productions.get(var, [])
+        rules_str = " | ".join(" ".join(r) for r in rules)
+        print(f"{var} -> {rules_str}")
 
 # Simplification Functions
 def remove_null_productions(non_terminals, terminals, start_symbol, productions):
@@ -68,7 +73,6 @@ def remove_null_productions(non_terminals, terminals, start_symbol, productions)
                     new_productions[v].append(comb)
     return non_terminals, terminals, start_symbol, new_productions
 
-
 def remove_unit_productions(non_terminals, productions):
     """Remove unit productions."""
     new_productions = {v: [] for v in non_terminals}
@@ -84,7 +88,6 @@ def remove_unit_productions(non_terminals, productions):
                 elif rule not in new_productions[v]:
                     new_productions[v].append(rule)
     return non_terminals, new_productions
-
 
 def convert_to_chomsky_nf(non_terminals, terminals, start_symbol, productions):
     """Convert grammar to Chomsky Normal Form."""
@@ -117,7 +120,6 @@ def convert_to_chomsky_nf(non_terminals, terminals, start_symbol, productions):
                     updated_rule[0] = new_var
                 new_productions[v].append(updated_rule)
     return non_terminals, terminals, start_symbol, new_productions
-
 
 def convert_to_greibach_nf(non_terminals, terminals, start_symbol, productions):
     """Convert grammar to Greibach Normal Form."""
@@ -157,7 +159,6 @@ def convert_to_greibach_nf(non_terminals, terminals, start_symbol, productions):
 
     return list(final_productions.keys()), terminals, start_symbol, final_productions
 
-
 # Main Execution
 if __name__ == "__main__":
     if len(sys.argv) != 2:
@@ -173,23 +174,34 @@ if __name__ == "__main__":
         # Read Grammar
         non_terminals, terminals, start_symbol, productions = read_grammar(input_file)
 
+        print("Original Grammar:")
+        print_grammar(non_terminals, productions)
+
         # Remove Null Productions
         non_terminals, terminals, start_symbol, productions = remove_null_productions(non_terminals, terminals, start_symbol, productions)
+        print("\nAfter Removing Null Productions:")
+        print_grammar(non_terminals, productions)
 
         # Remove Unit Productions
         non_terminals, productions = remove_unit_productions(non_terminals, productions)
+        print("\nAfter Removing Unit Productions:")
+        print_grammar(non_terminals, productions)
 
         # Chomsky Normal Form
         chomsky_file = input_file.replace(".general", ".chomsky")
         cnf_non_terminals, terminals, start_symbol, cnf_productions = convert_to_chomsky_nf(non_terminals, terminals, start_symbol, productions)
+        print("\nAfter Converting to Chomsky Normal Form:")
+        print_grammar(cnf_non_terminals, cnf_productions)
         write_grammar(chomsky_file, cnf_non_terminals, cnf_productions)
 
         # Greibach Normal Form
         greibach_file = input_file.replace(".general", ".greibach")
         gnf_non_terminals, terminals, start_symbol, gnf_productions = convert_to_greibach_nf(non_terminals, terminals, start_symbol, productions)
+        print("\nAfter Converting to Greibach Normal Form:")
+        print_grammar(gnf_non_terminals, gnf_productions)
         write_grammar(greibach_file, gnf_non_terminals, gnf_productions)
 
-        print(f"Grammars written to {chomsky_file} and {greibach_file}")
+        print(f"\nGrammars written to {chomsky_file} and {greibach_file}")
 
     except Exception as e:
         print(f"Error: {e}")
