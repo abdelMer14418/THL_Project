@@ -108,20 +108,60 @@ def convert_to_chomsky_nf(variables, terminals, start_symbol, productions):
     return variables, terminals, start_symbol, new_productions
 
 def convert_to_greibach_nf(variables, terminals, start_symbol, productions):
-    """Convert grammar to Greibach Normal Form."""
+    """Convert grammar to Greibach Normal Form with terminal replacements."""
     def starts_with_terminal(rule):
+        """Check if a rule starts with a terminal."""
         return len(rule) > 0 and rule[0] in terminals
 
-    new_productions = {v: [] for v in variables}
+    # Replace auxiliary variables (like T_0, T_1) with their corresponding terminals
+    terminal_replacements = {v: rules[0][0] for v, rules in productions.items() if v.startswith("T_")}
+    
+    # Update productions to replace auxiliary variables with their terminals
+    updated_productions = {}
     for v, rules in productions.items():
+        updated_productions[v] = []
         for rule in rules:
+            updated_rule = [terminal_replacements.get(sym, sym) for sym in rule]
+            updated_productions[v].append(updated_rule)
+
+    # New productions dictionary
+    final_productions = {v: [] for v in variables if not v.startswith("T_")}
+
+    def substitute_non_terminal(rule):
+        """Substitute non-terminal at the start of a rule."""
+        first_sym = rule[0]
+        if first_sym in variables:
+            # Replace the first non-terminal with its productions
+            substituted_rules = []
+            for replacement in updated_productions[first_sym]:
+                substituted_rules.append(replacement + rule[1:])
+            return substituted_rules
+        return [rule]  # No substitution needed
+
+    for v in final_productions:
+        worklist = updated_productions[v][:]
+        while worklist:
+            rule = worklist.pop(0)
+
             if starts_with_terminal(rule):
-                new_productions[v].append(rule)
-            elif len(rule) > 0:
-                replacement = productions[rule[0]]
-                for repl_rule in replacement:
-                    new_productions[v].append(repl_rule + rule[1:])
-    return variables, terminals, start_symbol, new_productions
+                # Rule starts with a terminal, add it directly
+                final_productions[v].append(rule)
+            elif len(rule) > 0 and rule[0] in variables:
+                # Rule starts with a non-terminal, substitute it
+                substituted_rules = substitute_non_terminal(rule)
+                worklist.extend(substituted_rules)
+            else:
+                # Preserve malformed or empty rules
+                final_productions[v].append(rule)
+
+    return list(final_productions.keys()), terminals, start_symbol, final_productions
+
+
+
+
+
+
+
 
 def print_grammar(variables, productions):
     """Print the grammar in a readable line-by-line format."""
