@@ -1,0 +1,7 @@
+T_0 : b
+A : T_2 A | a
+B : T_0 B | b
+T_1 : c
+S : A B |  | T_1 C | c | T_0 B | b
+T_2 : a
+C : T_1 C | c

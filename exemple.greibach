@@ -1,0 +1,4 @@
+A : a A | a
+B : b B | b
+S :  | c C | c | b B | b | a A B | a B
+C : c C | c
