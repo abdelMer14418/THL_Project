@@ -6,3 +6,4 @@ binome.txt
 dist/
 build/
 *.spec
+*.docx
