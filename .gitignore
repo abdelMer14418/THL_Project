@@ -1,3 +1,8 @@
-exemple.chomsky
-exemple.general
-exemple.greibach
+*.chomsky
+*.general
+*.greibach
+binome.txt
+.vscode
+dist/
+build/
+*.spec
