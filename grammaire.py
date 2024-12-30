@@ -19,12 +19,25 @@ def read_grammar(filename):
             right_rules = [rule.strip().replace("E", "ε") for rule in right.split('|')]
 
             if start_symbol is None:
-                start_symbol = left  # The first left-hand side is the start symbol
+                start_symbol = left  # The first non-terminal is the start symbol
 
             non_terminals.add(left)
-            productions[left] = [rule.split() for rule in right_rules]
+            # Split each rule into individual symbols
+            productions[left] = [list(rule) for rule in right_rules]
 
     return non_terminals, terminals, start_symbol, productions
+
+
+
+def print_grammar(non_terminals, productions):
+    """Print the grammar in a readable line-by-line format."""
+    for var in non_terminals:
+        rules = productions.get(var, [])
+        rules_str = " | ".join(" ".join(r) for r in rules)
+        print(f"{var} -> {rules_str}")
+
+
+
 
 def write_grammar(filename, non_terminals, productions):
     """Write the grammar to a file."""
@@ -202,6 +215,17 @@ if __name__ == "__main__":
         write_grammar(greibach_file, gnf_non_terminals, gnf_productions)
 
         print(f"\nGrammars written to {chomsky_file} and {greibach_file}")
+
+
+        #print(non_terminals)
+        #print(terminals)
+        #print(productions)
+        #print(start_symbol)
+
+
+
+
+
 
     except Exception as e:
         print(f"Error: {e}")
