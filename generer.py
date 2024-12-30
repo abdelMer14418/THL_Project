@@ -1,30 +1,35 @@
 import sys
 
-EPSILON = "E"
+EPSILON = "ε"
 
-def parse_rules(rules):
-    grammar = {}
+def read_grammar(filename):
+    """Read grammar from a file and return its components."""
+    non_terminals = set()
+    terminals = set(chr(i) for i in range(97, 123))  # a-z
+    productions = {}
     start_symbol = None
 
-    for line in rules:
-        line = line.strip()
-        if not line or ':' not in line:
-            continue
+    with open(filename, "r") as file:
+        for line in file:
+            line = line.strip()
+            if not line or ':' not in line:
+                continue  # Skip empty or malformed lines
 
-        lhs, rhs = map(str.strip, line.split(':', 1))
-        rhs_options = [option.strip().split() for option in rhs.split('|')]
+            left, right = map(str.strip, line.split(':', 1))
+            right_rules = [rule.strip().replace("E", EPSILON) for rule in right.split('|')]
 
-        if start_symbol is None:
-            start_symbol = lhs
+            if start_symbol is None:
+                start_symbol = left  # The first non-terminal is the start symbol
 
-        if lhs not in grammar:
-            grammar[lhs] = []
+            non_terminals.add(left)
+            # Split each rule into individual symbols
+            productions[left] = [list(rule) for rule in right_rules]
 
-        grammar[lhs].extend(rhs_options)
+        #print(productions)
 
-    return grammar, start_symbol
+    return non_terminals, terminals, start_symbol, productions
 
-def generate_words(grammar, start_symbol, max_length):
+def generate_words(non_terminals, terminals, start_symbol, productions, max_length):
     results = set()
 
     def expand(symbols, current_word):
@@ -36,8 +41,8 @@ def generate_words(grammar, start_symbol, max_length):
 
         first, *rest = symbols
 
-        if first in grammar:  # Non-terminal symbol
-            for option in grammar[first]:
+        if first in productions:  # Non-terminal symbol
+            for option in productions[first]:
                 expand(option + rest, current_word)
         elif first == EPSILON:  # Handle epsilon
             expand(rest, current_word)
@@ -56,11 +61,11 @@ if __name__ == "__main__":
     max_length = int(sys.argv[2])
 
     try:
-        with open(grammar_file, "r") as file:
-            rules = file.readlines()
+        # Read the grammar
+        non_terminals, terminals, start_symbol, productions = read_grammar(grammar_file)
 
-        grammar, start_symbol = parse_rules(rules)
-        words = generate_words(grammar, start_symbol, max_length)
+        # Generate words
+        words = generate_words(non_terminals, terminals, start_symbol, productions, max_length)
 
         for word in words:
             print(word)
