@@ -200,6 +200,13 @@ if __name__ == "__main__":
         print("\nAfter Removing Unit Productions:")
         print_grammar(non_terminals, productions)
 
+        # Greibach Normal Form
+        greibach_file = input_file.replace(".general", ".greibach")
+        gnf_non_terminals, terminals, start_symbol, gnf_productions = convert_to_greibach_nf(non_terminals, terminals, start_symbol, productions)
+        print("\nAfter Converting to Greibach Normal Form:")
+        print_grammar(gnf_non_terminals, gnf_productions)
+        write_grammar(greibach_file, gnf_non_terminals, gnf_productions)
+
         # Chomsky Normal Form
         chomsky_file = input_file.replace(".general", ".chomsky")
         cnf_non_terminals, terminals, start_symbol, cnf_productions = convert_to_chomsky_nf(non_terminals, terminals, start_symbol, productions)
@@ -207,12 +214,7 @@ if __name__ == "__main__":
         print_grammar(cnf_non_terminals, cnf_productions)
         write_grammar(chomsky_file, cnf_non_terminals, cnf_productions)
 
-        # Greibach Normal Form
-        greibach_file = input_file.replace(".general", ".greibach")
-        gnf_non_terminals, terminals, start_symbol, gnf_productions = convert_to_greibach_nf(non_terminals, terminals, start_symbol, productions)
-        print("\nAfter Converting to Greibach Normal Form:")
-        print_grammar(gnf_non_terminals, gnf_productions)
-        write_grammar(greibach_file, gnf_non_terminals, gnf_productions)
+
 
         print(f"\nGrammars written to {chomsky_file} and {greibach_file}")
 
