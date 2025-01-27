@@ -9,23 +9,32 @@ def read_grammar(filename):
     productions = {}
     start_symbol = None
 
+    current_non_terminal = None  # To track the current left-hand side symbol
+
     with open(filename, "r") as file:
         for line in file:
             line = line.strip()
             if not line or ':' not in line:
                 continue  # Skip empty or malformed lines
 
+            # Extract left and right parts of the production
             left, right = map(str.strip, line.split(':', 1))
             right_rules = [rule.strip().replace("E", "ε") for rule in right.split('|')]
 
-            if start_symbol is None:
-                start_symbol = left  # The first non-terminal is the start symbol
+            if current_non_terminal is None or left != current_non_terminal:
+                current_non_terminal = left
+                if start_symbol is None:
+                    start_symbol = left  # Set the first non-terminal as the start symbol
 
-            non_terminals.add(left)
-            # Split each rule into individual symbols
-            productions[left] = [list(rule) for rule in right_rules]
+            non_terminals.add(current_non_terminal)
+
+            # Append new rules to the existing ones
+            if current_non_terminal not in productions:
+                productions[current_non_terminal] = []
+            productions[current_non_terminal].extend([list(rule) for rule in right_rules])
 
     return non_terminals, terminals, start_symbol, productions
+
 
 
 
